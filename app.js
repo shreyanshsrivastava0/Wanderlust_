@@ -25,6 +25,7 @@ const { isLoggedIn, saveredirectUrl, isOwner, validatelisting, validatereview, i
 
 // upload files on cloud
 const multer = require('multer');
+const dburl = process.env.ATLASDB_URL;
 
 const { storage } = require("./CoudConfig.js");
 const upload = multer({ storage });
@@ -73,7 +74,6 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
-const dburl = process.env.ATLASDB_URL;
 
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
