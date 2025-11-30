@@ -168,12 +168,12 @@ app.get("/listings/:id", wrapasync(async (req, res) => {
         .populate("owner");
     if (!slisting) {
         req.flash("error", "Does not exist");
-        res.redirect("/listings");
+       return res.redirect("/listings");
     }
 
 
 
-    res.render("listings/show", { slisting })
+  return  res.render("listings/show", { slisting })
 }));
 
 app.get("/listings/:id/edit", isLoggedIn, wrapasync(async (req, res) => {
@@ -219,11 +219,9 @@ app.post("/signup", wrapasync(async (req, res) => {
             if (err) {
                 return next(err);
             }
-            req.flash("success", " Your are logged out");
+            req.flash("success", " Registered successfully ");
             return res.redirect("/listings");
-        })
-        req.flash("success", "Registered successfully");
-        res.redirect("/listings");
+        });
     }
     catch (e) {
         req.flash("error", e.message);
