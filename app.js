@@ -38,7 +38,7 @@ const store = MongoStore.create({
     touchAfter : 24*3600,
 });
 
-store.on("error", ()=>{
+store.on("error", (err)=>{
     console.log("ERROR in MONGO SESSION STORE", err);
 });
 
@@ -240,7 +240,7 @@ app.get("/logout", (req, res, next) => {
 });
 
 app.use((req, res, next) => {
-    next(new expresserror(404, "not found"));
+   return  next(new expresserror(404, "not found"));
 });
 
 app.use((err, req, res, next) => {
