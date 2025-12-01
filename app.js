@@ -95,7 +95,7 @@ async function main() {
 };
 
 app.get("/", (req, res) => {
-    res.send("Heloo");
+    res.render("listings/index");
 });
 
 
