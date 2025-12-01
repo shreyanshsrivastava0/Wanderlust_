@@ -94,7 +94,7 @@ async function main() {
 
 };
 
-app.get("/", (req, res) => {
+app.get("/", async(req, res) => {
    const allisting = await listing.find({});
 
     res.render("listings/index", { allisting });
