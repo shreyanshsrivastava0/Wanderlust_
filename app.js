@@ -31,12 +31,11 @@ const { storage } = require("./CoudConfig.js");
 const upload = multer({ storage });
 
 
+console.log("DB URL:", dburl);
 
 const store = MongoStore.create({
     mongoUrl :dburl,
-    crypto : {
-        secret :process.env.SECRET || "fallbacksecret",
-    },
+    collectionName: "sessions",
     touchAfter : 24*3600,
 });
 
