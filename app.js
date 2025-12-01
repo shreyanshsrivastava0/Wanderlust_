@@ -30,15 +30,17 @@ const dburl = process.env.ATLASDB_URL;
 const { storage } = require("./CoudConfig.js");
 const upload = multer({ storage });
 
+
+
 const store = MongoStore.create({
     mongoUrl :dburl,
     crypto : {
-        secret :process.env.SECRET,
+        secret :process.env.SECRET || "fallbacksecret",
     },
     touchAfter : 24*3600,
 });
 
-store.on("error", (err)=>{
+store.on("error",function (err){
     console.log("ERROR in MONGO SESSION STORE", err);
 });
 
@@ -168,12 +170,12 @@ app.get("/listings/:id", wrapasync(async (req, res) => {
         .populate("owner");
     if (!slisting) {
         req.flash("error", "Does not exist");
-       return res.redirect("/listings");
+      return res.redirect("/listings");
     }
 
 
 
-  return  res.render("listings/show", { slisting })
+    res.render("listings/show", { slisting })
 }));
 
 app.get("/listings/:id/edit", isLoggedIn, wrapasync(async (req, res) => {
@@ -196,7 +198,7 @@ app.post("/listings/:id/reviews", isLoggedIn, validatereview, wrapasync(async (r
     res.redirect(`/listings/${id}`);
 }));
 
-app.delete("/listings/:id/reviews/:reviewId", isLoggedIn, isLoggedIn, wrapasync(async (req, res) => {
+app.delete("/listings/:id/reviews/:reviewId", isLoggedIn, wrapasync(async (req, res) => {
     let { id, reviewId } = req.params;
 
     await listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
@@ -219,15 +221,15 @@ app.post("/signup", wrapasync(async (req, res) => {
             if (err) {
                 return next(err);
             }
-            req.flash("success", " Registered successfully ");
+            req.flash("success", " successfull");
             return res.redirect("/listings");
         });
-    }
-    catch (e) {
+    } catch (e) {
         req.flash("error", e.message);
         res.redirect("/signup");
     }
 }));
+
 app.get("/logout", (req, res, next) => {
     req.logout((err) => {
         if (err) {
@@ -240,12 +242,17 @@ app.get("/logout", (req, res, next) => {
 });
 
 app.use((req, res, next) => {
-   return  next(new expresserror(404, "not found"));
+    next(new expresserror(404, "not found"));
 });
 
 app.use((err, req, res, next) => {
-    let { statuscode = 500, message } = err;
-    res.render("error.ejs", { statuscode, message });
+
+    if (res.headersSent) {
+        return next(err);  
+    }
+
+    let { statuscode = 500, message = "Something went wrong" } = err;
+    res.status(statuscode).render("error.ejs", { statuscode, message });
 });
 app.listen(port, () => {
     console.log("Started");
